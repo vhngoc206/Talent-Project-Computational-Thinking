@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+/* ===== Design tokens SmartStudy – "Ghibli × Notion": nền giấy ấm, xanh rêu, tối giản ===== */
+@theme {
+  --font-sans: 'Nunito Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Tiêu đề trang dùng serif cho cảm giác "sách tranh" */
+  --font-serif: 'Lora Variable', Georgia, 'Times New Roman', serif;
+
+  /* Bảng màu: lá cây, bầu trời, mái ngói, lúa chín */
+  --color-peach: #f3e3cf;
+  --color-blush: #e3eedb;
+  --color-cream: #f6f5ef;
+  --color-brand: #a9cb8f;
+  --color-brand-hover: #97bd7a;
+  --color-butter: #f5e9bd;
+  --color-ink: #2f3437;
+  --color-sky: #dcebf5;
+  --color-sky-deep: #2f5d80;
+
+  /* Chữ / viền (đủ tương phản trên nền trắng & giấy) */
+  --color-ink-soft: #545b55;
+  --color-ink-mute: #6c736b;
+  --color-brand-deep: #3c6a37;
+  --color-brand-tint: #ecf4e4;
+  --color-line: #e8e6de;
+  --color-line-strong: #d6d3c7;
+  --color-paper: #fbfbf8;
+  --color-sidebar: #f4f3ee;
+
+  /* Trạng thái */
+  --color-danger-bg: #fbe4e1;
+  --color-danger-fg: #a8322a;
+  --color-warn-bg: #fbedd5;
+  --color-warn-fg: #8a4f0b;
+  --color-safe-bg: #e2f1dc;
+  --color-safe-fg: #2f6a2c;
+
+  /* Màu biểu đồ */
+  --color-chart-done: #4f8a4b;
+  --color-chart-doing: #d99a3d;
+  --color-chart-todo: #7fa3c4;
+
+  /* Bóng rất nhẹ kiểu Notion */
+  --shadow-soft: 0 0 0 1px rgb(47 52 55 / 0.06), 0 1px 3px rgb(47 52 55 / 0.05);
+  --shadow-pop: 0 16px 40px -16px rgb(31 45 30 / 0.35), 0 0 0 1px rgb(47 52 55 / 0.06);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-deep);
+    outline-offset: 2px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  ::selection {
+    background: #d6e8c6;
+  }
+}
+
+@layer components {
+  /* Ô nhập liệu dùng chung */
+  .input-base {
+    @apply w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-mute;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input-base:hover {
+    border-color: var(--color-line-strong);
+  }
+  .input-base:focus {
+    outline: none;
+    border-color: #8fb874;
+    box-shadow: 0 0 0 3px rgb(143 184 116 / 0.25);
+  }
+  .input-error {
+    border-color: var(--color-danger-fg) !important;
+  }
+}
+
+/* Animation nhẹ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+/* Ảnh bìa "sống động": trôi rất chậm như máy quay lia (Ken Burns) */
+@keyframes ken-burns {
+  from {
+    transform: scale(1.04) translate3d(-1%, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(1.5%, -1%, 0);
+  }
+}
+.anim-ken-burns {
+  animation: ken-burns 40s ease-in-out infinite alternate;
+  will-change: transform;
+}
+/* Nhân vật nhún nhẹ */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.anim-bob {
+  animation: bob 3.2s ease-in-out infinite;
+}
+/* Lá rơi trên ảnh bìa */
+@keyframes leaf-fall {
+  0% {
+    transform: translate3d(0, -20px, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(-60px, 240px, 0) rotate(260deg);
+    opacity: 0;
+  }
+}
+.leaf {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 6px;
+  border-radius: 10px 0;
+  background: #b9d79f;
+  animation: leaf-fall linear infinite;
+  pointer-events: none;
+}
+
+.anim-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+.anim-pop-in {
+  animation: pop-in 0.18s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

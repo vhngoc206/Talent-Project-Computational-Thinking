@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// Luật bảo mật Firestore cho SmartStudy:
+//  - Mỗi người chỉ đọc/ghi được dữ liệu học tập của CHÍNH MÌNH.
+//  - Lượt truy cập: ai đăng nhập cũng ghi được lượt của mình, nhưng CHỈ admin đọc được.
+//  - Admin = email vohongngoc16102006@gmail.com và email đã được xác minh.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email == 'vohongngoc16102006@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    // Dữ liệu học tập (môn học, nhiệm vụ, sự kiện…)
+    match /userData/{uid} {
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.json is string
+        && request.resource.data.json.size() < 900000;
+    }
+
+    // Hồ sơ người dùng (tên, email, lần truy cập cuối)
+    match /users/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow create, update: if signedIn() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // Lượt truy cập
+    match /visits/{visitId} {
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'name', 'at', 'device']);
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}
